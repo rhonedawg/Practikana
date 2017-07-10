@@ -1,0 +1,319 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+	<head>
+		<meta charset="UTF-8">
+		<title>Kanagrinder</title>
+
+		<!-- Styles -->
+		<style type="text/css">
+			td { text-align: center; }
+			.container { margin-top: 5em; }
+			.g { display: block; font-size: 16pt;
+						position: relative;
+			      top: 50%;
+			      left: 50%;
+					}
+			#practice { text-align: center; margin-top: 5em; }
+		</style>
+
+		<!-- Scripts -->
+		<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/1.4.0/js/bootstrap-tabs.js"></script> -->
+		<script>
+			var index, right, wrong, current, glyph, answer;
+			var stack = [];
+			var columns = [];
+
+			/* Easy removal of an array element */
+			Array.prototype.remove = function(from, to) {
+				var rest = this.slice((to || from) + 1 || this.length);
+				this.length = from < 0 ? this.length + from : from;
+				return this.push.apply(this, rest);
+			};
+
+			/* Randomly shuffles an array */
+			var shuffle = function(o){
+				for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+				return o;
+			};
+
+			/* Applies blue highlighting to a table column */
+			var highlightColumn = function(name) {
+				var table = name.charAt(0);
+				var col = parseInt(name.charAt(1)) + 1;
+
+				if (table === 'h') table = 'hira';
+				else table = 'kata';
+
+				$('table#'+table+' > tbody > tr > td:nth-child('+col+')').css('background','#c2ebff');
+				columns.push(name);
+			};
+
+			/* Clears the blue highlighting from a column */
+			var clearColumn = function(name) {
+				var table = name.charAt(0);
+				var col = parseInt(name.charAt(1)) + 1;
+
+				if (table === 'h') table = 'hira';
+				else table = 'kata';
+
+				$('table#'+table+' > tbody > tr > td:nth-child('+col+')').css('background','#fff');
+				columns.remove(columns.indexOf(name));
+			};
+
+			/* Places a glyph in the test area and stores the correct answer */
+			var setupTest = function() {
+				answer = stack[index][0];
+				glyph = stack[index][1];
+				$('#test').html('<span class="g">'+glyph+'</span>');
+			};
+
+			/* Resets all testing */
+			var resetAll = function() {
+				index = 0;
+				// somehow grab all glyphs needed. the hardest part.
+				stack = [];
+				for (var i=0; i < columns.length; i++) {
+					table = columns[i].charAt(0);
+					col = columns[i].charAt(1);
+
+					if (table === 'h') data = hiragana[col];
+					else data = katakana[col];
+
+					stack = stack.concat(data);
+				}
+
+				stack = shuffle(stack);
+				setupTest();
+			};
+
+			/* init */
+			$(document).ready(function(){
+				$('#wrong').hide();
+				$('#right').hide();
+				$('.tabs').tabs();
+				$('input[type=checkbox]').click(function(){
+					if ($(this).attr('checked') === 'checked')
+						highlightColumn($(this).attr('name'));
+					else
+						clearColumn($(this).attr('name'));
+
+					resetAll();
+				});
+
+				$(document).bind('keypress', function(e){
+					if(e.which === 13) {
+						$('input#check').trigger('click');
+					}
+				});
+
+				$('input#check').click(function(){
+					attempt = $('input#attempt').val();
+					if (attempt === answer) {
+						$('#wrong').hide();
+						$('#right').show();
+						right++;
+						index++;
+						if (index === stack.length)
+							resetAll();
+						else
+							setupTest();
+						$('#right').fadeOut(1000);
+					} else {
+						wrong++;
+						$('#wrong').show();
+					}
+					$('input#attempt').val('');
+					$('input#attempt').focus();
+				});
+			});
+		</script>
+
+		<script>
+		/* Glyph data storage */
+
+		var hiragana = [
+			[['a', 'あ'], ['i', 'い'], ['u', 'う'], ['e', 'え'], ['o', 'お']],
+			[['ka', 'か'], ['ki', 'き'], ['ku', 'く'], ['ke', 'け'], ['ko', 'こ']],
+			[['sa', 'さ'], ['shi', 'し'], ['su', 'す'], ['se', 'せ'], ['so', 'そ']],
+			[['ta', 'た'], ['chi', 'ち'], ['tsu', 'つ'], ['te', 'て'], ['to', 'と']],
+			[['na', 'な'], ['ni', 'に'], ['nu', 'ぬ'], ['ne', 'ね'], ['no', 'の']],
+			[['ha', 'は'], ['hi', 'ひ'], ['fu', 'ふ'], ['he', 'へ'], ['ho', 'ほ']],
+			[['ma', 'ま'], ['mi', 'み'], ['mu', 'む'], ['me', 'め'], ['mo', 'も']],
+			[['ya', 'や'], ['yu', 'ゆ'], ['yo', 'よ']],
+			[['ra', 'ら'], ['ri', 'り'], ['ru', 'る'],  ['re', 'れ'], ['ro', 'ろ']],
+			[['wa', 'わ'], ['o', 'を']],
+			[['n', 'ん']],
+			[['ga', 'が'], ['gi', 'ぎ'], ['gu', 'ぐ'], ['ge', 'げ'], ['go', 'ご']],
+			[['za', 'ざ'], ['ji', 'じ'], ['zu', 'ず'], ['ze', 'ぜ'], ['zo', 'ぞ']],
+			[['da', 'だ'], ['ji', 'ぢ'], ['zu', 'づ'], ['de', 'で'], ['do', 'ど']],
+			[['ba', 'ば'], ['bi', 'び'], ['bu', 'ぶ'], ['be', 'べ'], ['bo', 'ぼ']],
+			[['pa', 'ぱ'], ['pi', 'ぴ'], ['pu', 'ぷ'], ['pe', 'ぺ'], ['po', 'ぽ']],
+		];
+
+		var katakana = [
+			[['a', 'ア'], ['i', 'イ'], ['u', 'ウ'], ['e', 'エ'], ['o', 'オ']],
+			[['ka', 'カ'], ['ki', 'キ'],  ['ku', 'ク'], ['ke', 'ケ'], ['ko', 'コ']],
+			[['sa', 'サ'], ['shi', 'シ'], ['su', 'ス'], ['se', 'セ'], ['so', 'ソ']],
+			[['ta', 'タ'], ['chi', 'チ'], ['tsu', 'ツ'], ['te', 'テ'], ['to', 'ト']],
+			[['na', 'ナ'], ['ni', 'ニ'], ['nu', 'ヌ'], ['ne', 'ネ'], ['no', 'ノ']],
+			[['ha', 'ハ'], ['hi', 'ヒ'], ['fu', 'フ'], ['he', 'ヘ'], ['ho', 'ホ']],
+			[['ma', 'マ'], ['mi', 'ミ'], ['mu', 'ム'], ['me', 'メ'], ['mo', 'モ']],
+			[['ya', 'ヤ'], ['yu', 'ユ'], ['yo', 'ヨ']],
+			[['ra', 'ラ'], ['ri', 'リ'], ['ru', 'ル'], ['re', 'レ'], ['ro', 'ロ']],
+			[['wa', 'ワ'], ['o', 'ヲ']],
+			[['n', 'ン']],
+			[['ga', 'ガ'], ['gi', 'ギ'], ['gu', 'グ'], ['ge', 'ゲ'], ['go', 'ゴ']],
+			[['za', 'ザ'], ['ji', 'ジ'], ['zu', 'ズ'], ['ze', 'ゼ'], ['zo', 'ゾ']],
+			[['da', 'ダ'], ['ji', 'ヂ'], ['zu', 'ヅ'], ['de', 'デ'], ['do', 'ド']],
+			[['ba', 'バ'], ['bi', 'ビ'], ['bu', 'ブ'], ['be', 'ベ'], ['bo', 'ボ']],
+			[['pa', 'パ'], ['pi', 'ピ'], ['pu', 'プ'], ['pe', 'ペ'], ['po', 'ポ']],
+		];
+		</script>
+	</head>
+	<body>
+		<div class="container">
+			<h1>Kanagrinder</h1>
+
+			<ul class="tabs">
+				<li class="active"><a href="#hiragana">Hiragana</a></li>
+				<li><a href="#katakana">Katakana</a></li>
+				<li><a href="#practice">Practice</a></li>
+			</ul>
+
+			<div class="tab-content">
+				<div class="active" id="hiragana">
+					<table id="hira">
+						<thead>
+							<tr>
+								<td><input type="checkbox" name="h0"></td>
+								<td><input type="checkbox" name="h1"></td>
+								<td><input type="checkbox" name="h2"></td>
+								<td><input type="checkbox" name="h3"></td>
+								<td><input type="checkbox" name="h4"></td>
+								<td><input type="checkbox" name="h5"></td>
+								<td><input type="checkbox" name="h6"></td>
+								<td><input type="checkbox" name="h7"></td>
+								<td><input type="checkbox" name="h8"></td>
+								<td><input type="checkbox" name="h9"></td>
+								<td><input type="checkbox" name="h10"></td>
+								<td><input type="checkbox" name="h11"></td>
+								<td><input type="checkbox" name="h12"></td>
+								<td><input type="checkbox" name="h13"></td>
+								<td><input type="checkbox" name="h14"></td>
+								<td><input type="checkbox" name="h15"></td>
+							</tr>
+						</thead>
+
+						<tbody>
+							<tr>
+								<td><span class="g">あ</span>a</td>  <td><span class="g">か</span>ka</td> <td><span class="g">さ</span>sa</td> <td><span class="g">た</span>ta</td>
+								<td><span class="g">な</span>na</td> <td><span class="g">は</span>ha</td> <td><span class="g">ま</span>ma</td> <td><span class="g">や</span>ya</td>
+								<td><span class="g">ら</span>ra</td> <td><span class="g">わ</span>wa</td> <td></td>                           <td><span class="g">が</span>ga</td>
+								<td><span class="g">ざ</span>za</td> <td><span class="g">だ</span>da</td> <td><span class="g">ば</span>ba</td> <td><span class="g">ぱ</span>pa</td>
+							</tr>
+
+							<tr>
+								<td><span class="g">い</span>i</td>  <td><span class="g">き</span>ki</td> <td><span class="g">し</span>shi</td> <td><span class="g">ち</span>chi</td>
+								<td><span class="g">に</span>ni</td> <td><span class="g">ひ</span>hi</td> <td><span class="g">み</span>mi</td>  <td></td>
+								<td><span class="g">り</span>ri</td> <td></td>                           <td></td>                             <td><span class="g">ぎ</span>gi</td>
+								<td><span class="g">じ</span>ji</td> <td><span class="g">ぢ</span>ji</td> <td><span class="g">び</span>bi</td>  <td><span class="g">ぴ</span>pi</td>
+							</tr>
+
+							<tr>
+								<td><span class="g">う</span>u</td>  <td><span class="g">く</span>ku</td>  <td><span class="g">す</span>su</td> <td><span class="g">つ</span>tsu</td>
+								<td><span class="g">ぬ</span>nu</td> <td><span class="g">ふ</span>fu</td> <td><span class="g">む</span>mu</td> <td><span class="g">ゆ</span>yu</td>
+								<td><span class="g">る</span>ru</td> <td></td>        <td></td>         <td><span class="g">ぐ</span>gu</td>
+								<td><span class="g">ず</span>zu</td> <td><span class="g">づ</span>zu</td> <td><span class="g">ぶ</span>bu</td> <td><span class="g">ぷ</span>pu</td>
+							</tr>
+
+							<tr>
+								<td><span class="g">え</span>e</td>  <td><span class="g">け</span>ke</td> <td><span class="g">せ</span>se</td> <td><span class="g">て</span>te</td>
+								<td><span class="g">ね</span>ne</td> <td><span class="g">へ</span>he</td> <td><span class="g">め</span>me</td> <td></td>
+								<td><span class="g">れ</span>re</td> <td></td>        <td></td>         <td><span class="g">げ</span>ge</td>
+								<td><span class="g">ぜ</span>ze</td> <td><span class="g">で</span>de</td> <td><span class="g">べ</span>be</td> <td><span class="g">ぺ</span>pe</td>
+							</tr>
+
+							<tr>
+								<td><span class="g">お</span>o</td>  <td><span class="g">こ</span>ko</td> <td><span class="g">そ</span>so</td> <td><span class="g">と</span>to</td>
+								<td><span class="g">の</span>no</td> <td><span class="g">ほ</span>ho</td> <td><span class="g">も</span>mo</td> <td><span class="g">よ</span>yo</td>
+								<td><span class="g">ろ</span>ro</td> <td><span class="g">を</span>o</td>  <td><span class="g">ん</span>n</td>  <td><span class="g">ご</span>go</td>
+								<td><span class="g">ぞ</span>zo</td> <td><span class="g">ど</span>do</td> <td><span class="g">ぼ</span>bo</td> <td><span class="g">ぽ</span>po</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div id="katakana">
+					<table id="kata">
+						<thead>
+							<tr>
+								<td><input type="checkbox" name="k0"></td>
+								<td><input type="checkbox" name="k1"></td>
+								<td><input type="checkbox" name="k2"></td>
+								<td><input type="checkbox" name="k3"></td>
+								<td><input type="checkbox" name="k4"></td>
+								<td><input type="checkbox" name="k5"></td>
+								<td><input type="checkbox" name="k6"></td>
+								<td><input type="checkbox" name="k7"></td>
+								<td><input type="checkbox" name="k8"></td>
+								<td><input type="checkbox" name="k9"></td>
+								<td><input type="checkbox" name="k10"></td>
+								<td><input type="checkbox" name="k11"></td>
+								<td><input type="checkbox" name="k12"></td>
+								<td><input type="checkbox" name="k13"></td>
+								<td><input type="checkbox" name="k14"></td>
+								<td><input type="checkbox" name="k15"></td>
+							</tr>
+						</thead>
+
+						<tbody>
+							<tr>
+								<td><span class="g">ア</span>a</td>  <td><span class="g">カ</span>ka</td> <td><span class="g">サ</span>sa</td> <td><span class="g">タ</span>ta</td>
+								<td><span class="g">ナ</span>na</td> <td><span class="g">ハ</span>ha</td> <td><span class="g">マ</span>ma</td> <td><span class="g">ヤ</span>ya</td>
+								<td><span class="g">ラ</span>ra</td> <td><span class="g">ワ</span>wa</td> <td></td>                           <td><span class="g">ガ</span>ga</td>
+								<td><span class="g">ザ</span>za</td> <td><span class="g">ダ</span>da</td> <td><span class="g">バ</span>ba</td> <td><span class="g">パ</span>pa</td>
+							</tr>
+
+							<tr>
+								<td><span class="g">イ</span>i</td>  <td><span class="g">キ</span>ki</td> <td><span class="g">シ</span>shi</td> <td><span class="g">チ</span>chi</td>
+								<td><span class="g">ニ</span>ni</td> <td><span class="g">ヒ</span>hi</td> <td><span class="g">ミ</span>mi</td>   <td><span class="g"></td>
+								<td><span class="g">リ</span>ri</td> <td></td>                            <td></td>                            <td><span class="g">ギ</span>gi</td>
+								<td><span class="g">ジ</span>ji</td> <td><span class="g">ヂ</span>ji</td> <td><span class="g">ビ</span>bi</td>   <td><span class="g">ピ</span>pi</td>
+							</tr>
+
+							<tr>
+								<td><span class="g">ウ</span>u</td>  <td><span class="g">ク</span>ku</td> <td><span class="g">ス</span>su</td> <td><span class="g">ツ</span>tsu</td>
+								<td><span class="g">ヌ</span>nu</td> <td><span class="g">フ</span>fu</td> <td><span class="g">ム</span>mu</td> <td><span class="g">ユ</span>yu</td>
+								<td><span class="g">ル</span>ru</td> <td></td>                           <td></td>                           <td><span class="g">グ</span>gu</td>
+								<td><span class="g">ズ</span>zu</td> <td><span class="g">ヅ</span>zu</td> <td><span class="g">ブ</span>bu</td> <td><span class="g">プ</span>pu</td>
+							</tr>
+
+							<tr>
+								<td><span class="g">エ</span>e</td>  <td><span class="g">ケ</span>ke</td> <td><span class="g">セ</span>se</td> <td><span class="g">テ</span>te</td>
+								<td><span class="g">ネ</span>ne</td> <td><span class="g">ヘ</span>he</td> <td><span class="g">メ</span>me</td> <td><span class="g"></td>
+								<td><span class="g">レ</span>re</td> <td></td>                           <td></td>                            <td><span class="g">ゲ</span>ge</td>
+								<td><span class="g">ゼ</span>ze</td> <td><span class="g">デ</span>de</td> <td><span class="g">ベ</span>be</td> <td><span class="g">ペ</span>pe</td>
+							</tr>
+
+							<tr>
+								<td><span class="g">オ</span>o</td>  <td><span class="g">コ</span>ko</td> <td><span class="g">ソ</span>so</td> <td><span class="g">ト</span>to</td>
+								<td><span class="g">ノ</span>no</td> <td><span class="g">ホ</span>ho</td> <td><span class="g">モ</span>mo</td> <td><span class="g">ヨ</span>yo</td>
+								<td><span class="g">ロ</span>ro</td> <td><span class="g">ヲ</span>o</td>  <td><span class="g">ン</span>n</td>  <td><span class="g">ゴ</span>go</td>
+								<td><span class="g">ゾ</span>zo</td> <td><span class="g">ド</span>do</td> <td><span class="g">ボ</span>bo</td> <td><span class="g">ポ</span>po</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div id="practice">
+					<div id="test"></div><br>
+					<input type="text" id="attempt"> <input type="button" value="Check" id="check"><br>
+					<span class="label important" id="wrong">いいえ!</span>
+					<span class="label success" id="right">はい!</span>
+				</div>
+			</div>
+
+		</div>
+	</body>
+</html>

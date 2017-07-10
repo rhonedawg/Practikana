@@ -1,0 +1,36 @@
+{% extends "practice/base.html" %}
+{% load staticfiles %}
+
+
+
+{% block content %}
+
+<div class="jumbotron">
+  <div id="container-home">
+    <h1 align="center">Pratikana</h1>
+    <h2 align="center"> Fun Language Learning</h2>
+    <br>
+    <br>
+ 
+
+    <!-- can't figure out how to put the picture in the middle of the page -->
+    <div id="startbutton">
+      <a href="/categories" class="btn btn-primary btn-lg">Try Japanese Now</a>
+    </div>
+    <br>
+    <br>
+
+
+    <p clas="space" align="center">❝One language sets you in a corridor for life. Two languages open every door along the way.❞</p>
+    <br>
+    <br>
+    <br>
+
+    <div id="birdcage">
+      <img src="{% static 'birdcardtrans.png' %}" align="middle" alt="Prarie Dogs" style="width:304px;height:228px;"/>
+    </div>
+
+
+    </div>
+</div>
+{% endblock content %}

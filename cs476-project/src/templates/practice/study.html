@@ -1,0 +1,112 @@
+{% extends "practice/base.html" %}
+
+{% block content %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/1.4.0/js/bootstrap-tabs.js"></script>
+
+
+<script type="text/javascript">
+	var data = {{data|safe}};
+	var stack = [];
+	var glyph, answer, attempt, index, wrong;
+	var score = 0;
+
+
+	var shuffle = function(o){
+		for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+		return o;
+	};
+
+
+
+	var setupTest = function() {
+		glyph = stack[index][0];
+		answer = stack[index][1];
+		$('#test').html('<h1 id="glyph">'+ glyph +'</h1>');
+	};
+
+
+	var reset = function() {
+		index = 0;
+		wrong = 0;
+		stack = shuffle(data);
+		setupTest();
+	};
+
+
+	$(document).ready(function(){
+		$('#wrong').hide();
+		$('#right').hide();
+		$('#check').hide();
+
+		$('#correct').hide();
+
+
+		reset();
+		//$('#correct').html('<h3>'+ answer +'</h3>');
+
+		$(document).bind('keypress', function(e){
+			if(e.which === 13) {
+				$('input#check').trigger('click');
+			}
+		});
+
+
+		$('input#check').click(function(){
+			attempt = $('input#attempt').val();
+
+
+			if (attempt === answer) {
+				$('#wrong').hide();
+				$('#right').show();
+				index++;
+				score++;
+				$('#score').html(score);
+
+				if (index === stack.length)
+					reset()
+				else
+					setupTest();
+
+				$('#right').fadeOut(1000);
+			} else {
+				wrong++;
+
+				if (wrong == 3) {
+					$('#correct').show();
+					$('#correct').html(answer);
+					$('#correct').fadeOut(2000);
+					wrong = 0;
+				}
+				$('#wrong').show();
+			}
+
+			$('input#attempt').val('');
+			$('input#attempt').focus();
+		});
+	});
+
+</script>
+
+<div class="jumbotron">
+	<div id="container-study">
+		<p class="label label-info" id="score">0</p> 
+
+
+		<center> <div id="test"></div> </center> <br>
+		
+		<center> <input type="text" id="attempt"> </center> <input type="button" value="Check" id="check"> <br> 
+		<center> <span class="label important" id="wrong">Try again!</span> </center> 
+		<center> <span class="label success" id="right">Nice!</span>  </center> <br> <br>
+		<center> <p class="label label-info" id="correct"> </p> </center> <br>
+		
+	</div>
+
+
+
+
+
+</div>
+
+{% endblock content %}

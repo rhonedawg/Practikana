@@ -1,0 +1,14 @@
+日:day
+本:book
+人:person
+月:moon
+火:fire
+水:water
+木:tree
+金:gold
+土:soil
+曜:weekday
+上:up
+下:down
+中:middle
+半:half

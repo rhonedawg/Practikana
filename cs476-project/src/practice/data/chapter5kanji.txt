@@ -1,0 +1,14 @@
+山:mountain 
+川:river
+元:origin
+気:spirit
+天:heaven
+私:I
+今:now
+田:rice field
+女:woman
+男:man
+見:to see
+行:to go
+食:to eat
+飲:to drink
