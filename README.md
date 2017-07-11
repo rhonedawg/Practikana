@@ -29,3 +29,8 @@ Add more languages
 We were unable to implement these features because front end developement took 
 longer than expected. One of our main goals was a clean and easy to use 
 interface, so we had to put more time into the front end than these features.
+
+Here is a demo video to explain the web application more.
+https://www.youtube.com/watch?v=Lt1rTstcxt0&feature=youtu.be
+
+
